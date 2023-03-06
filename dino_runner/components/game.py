@@ -1,6 +1,8 @@
 import pygame
-
+from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
+import random
+import time
 
 
 class Game:
@@ -14,6 +16,10 @@ class Game:
         self.game_speed = 20
         self.x_pos_bg = 0
         self.y_pos_bg = 380
+        self.font = pygame.font.Font(None, 36)
+        self.score=0
+        self.player = Dinosaur()
+        self.time_1=time.time()
 
     def run(self):
         # Game loop: events - update - draw
@@ -30,12 +36,22 @@ class Game:
                 self.playing = False
 
     def update(self):
-        pass
+        user_input = pygame.key.get_pressed()
+        self.player.update(user_input)
+        if self.playing==True:
+            time_2=time.time()
+            self.score=int(time_2-self.time_1)
+
 
     def draw(self):
         self.clock.tick(FPS)
         self.screen.fill((255, 255, 255))
         self.draw_background()
+        self.player.draw(self.screen)
+        pygame.display.update()
+        pygame.display.flip()
+        score_text = self.font.render("Score: " + str(self.score), True, (0, 0, 0))
+        self.screen.blit(score_text, (10, 10))
         pygame.display.update()
         pygame.display.flip()
 
