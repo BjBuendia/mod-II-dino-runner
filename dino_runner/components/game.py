@@ -73,9 +73,9 @@ class Game:
                     self.obstacles.remove(obstacle)
                     self.obstacle_on_screen = False
                     break
-                #if self.player.rect.colliderect(obstacle.rect):
-                    #time.sleep(0.5)
-                    #self.playing = False
+                if self.player.dino_rect.colliderect(obstacle.rect):
+                    time.sleep(0.5)
+                    self.playing = False
 
 
             if not self.obstacle_on_screen:
