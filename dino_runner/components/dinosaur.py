@@ -1,5 +1,5 @@
 import pygame
-from dino_runner.utils.constants import RUNNING, DUCKING, JUMPING    
+from dino_runner.utils.constants import DEAD, RUNNING, DUCKING, JUMPING    
 from pygame.sprite import Sprite
 
 class Dinosaur(Sprite):
@@ -18,6 +18,7 @@ class Dinosaur(Sprite):
         self.dino_run = True
         self.dino_duck = False
         self.dino_jump = False
+        self.dino_dead=False
 
 
     def process_event(self, user_input):
@@ -26,10 +27,11 @@ class Dinosaur(Sprite):
             self.dino_duck = True
             self.dino_jump = False
 
-        elif user_input[pygame.K_UP]:
+        elif user_input[pygame.K_UP] or user_input[pygame.K_SPACE]  :
             self.dino_run = False
             self.dino_duck = False
             self.dino_jump = True
+        
         
 
     def update(self, user_input):
@@ -38,6 +40,8 @@ class Dinosaur(Sprite):
             self.duck()
         elif self.dino_jump:
             self.jump()
+        elif self.dino_dead:
+            self.dead()
         else:    
             self.run()
 
@@ -73,6 +77,9 @@ class Dinosaur(Sprite):
             self.JUMP_VEL *= -1
             self.dino_rect.y = self.Y_POS
             self.dino_jump = False    
+    def dead(self):
+        self.image=DEAD
+        self.dino_dead=True
 
 
         
