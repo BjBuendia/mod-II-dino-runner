@@ -3,7 +3,7 @@ import pygame
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.game_over import show_game_over
 from dino_runner.components.windows import show_windows 
-from dino_runner.utils.constants import BG, HAMMER, HEART, ICON, LARGE_CACTUS, SCREEN_HEIGHT, SCREEN_WIDTH, SHIELD, SMALL_CACTUS, TITLE, FPS,BIRD
+from dino_runner.utils.constants import BG, CLOUD, HAMMER, HEART, ICON, LARGE_CACTUS, SCREEN_HEIGHT, SCREEN_WIDTH, SHIELD, SMALL_CACTUS, TITLE, FPS,BIRD
 import random
 import time
 
@@ -52,6 +52,16 @@ class bird:
             self.step=0
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+
+class cloud_1(small_cactus):
+
+    def __init__(self, image, x, y, speed_game):
+        super().__init__(image, x, y, speed_game)
+        self.rect.y = self.rect.y = random.randint(0,150)
+
+
+    
+
 
 list_powers=[SHIELD,HEART,HAMMER]
 
@@ -107,6 +117,8 @@ class Game:
         self.powers_up=[]
         self.powers_up_on_screen=False
         self.is_power=False
+        self.cloud_in_screen=False
+        self.clouds=[]
 
         
         
@@ -129,12 +141,13 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         if self.playing == True:
+
             time_2 = time.time()
             self.score = int(time_2 - self.time_1)
             if self.score==100:
                 show_you_win(self.screen)
             self.game_speed=20+int(self.score*0.01)#para agregar velocidad al juego
-            self.inicial_leaves=2+int(self.score*0.1)#para agregar conteo de vidas
+             
 
             
             if not self.obstacle_on_screen:
@@ -171,6 +184,11 @@ class Game:
                     power = hammer(image_2, SCREEN_WIDTH, 400, self.game_speed)
                     self.powers_up.append(power)
                     self.powers_up_on_screen= True
+            if not self.cloud_in_screen:
+                image_3=CLOUD
+                cloud=cloud_1(image_3, SCREEN_WIDTH, 400, self.game_speed)
+                self.clouds.append(cloud)
+                self.powers_up_on_screen= True
              
                     
 
@@ -193,20 +211,27 @@ class Game:
                     show_game_over(self.screen)
                     self.inicial_leaves -=1
                     break
-                for power in self.powers_up:
-                    power.update()
-                    if power.rect.x < -power.rect.width:
-                        #time.sleep(random.randint(3,8))
-                        self.powers_up.remove(power)
-                        self.powers_up_on_screen = False
-                        break
-                    if self.player.dino_rect.colliderect(power.rect):
-                        # self.is_power=True
-                        time_p_1=time.time()
-                        self.powers_up.remove(power)
-                        self.powers_up_on_screen = False
-                        #power.power(self. is_power, self.player, obstacle, self.obstacles)
-                        break
+            for power in self.powers_up:
+                power.update()
+                if power.rect.x < -power.rect.width:
+                    #time.sleep(random.randint(3,8))
+                    self.powers_up.remove(power)
+                    self.powers_up_on_screen = False
+                    break
+                if self.player.dino_rect.colliderect(power.rect):
+                    # self.is_power=True
+                    time_p_1=time.time()
+                    self.powers_up.remove(power)
+                    self.powers_up_on_screen = False
+                    #power.power(self. is_power, self.player, obstacle, self.obstacles)
+                    break
+            for cloud in self.clouds:
+                cloud.update()
+                if cloud.rect.x < -cloud.rect.width:
+                    #time.sleep(random.randint(3,8))
+                    self.clouds.remove(cloud)
+                    self.cloud_in_screen = False
+                    break
                     
 
 
@@ -262,6 +287,8 @@ class Game:
             obstacle.draw(self.screen)
         for power in self.powers_up:
             power.draw(self.screen)
+        for cloud in self.clouds:
+            cloud.draw(self.screen)
 
         
         score_text = self.font.render("Score: " + str(self.score), True, (0, 0, 0))
